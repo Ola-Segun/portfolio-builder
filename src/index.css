@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+/* Builder-specific CSS custom properties */
+:root {
+  --builder-panel-width: 280px;
+  --builder-toolbar-height: 52px;
+  --builder-inspector-width: 300px;
+
+  /* Scrollbar tokens */
+  --scroll-thumb: rgba(255,255,255,0.10);
+  --scroll-thumb-hover: rgba(255,255,255,0.22);
+  --scroll-track: transparent;
+  --scroll-size: 3px;
+
+  /* Resize handle */
+  --resize-handle-width: 4px;
+  --resize-handle-color: rgba(255,255,255,0.0);
+  --resize-handle-hover: rgba(255,255,255,0.15);
+  --resize-handle-active: rgba(255,255,255,0.35);
+}
+
+/* ── Reset ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+body  { margin: 0; padding: 0; }
+#root { width: 100%; height: 100vh; overflow: hidden; }
+
+/* ── Global custom scrollbars (builder shell) ────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+::-webkit-scrollbar {
+  width:  var(--scroll-size);
+  height: var(--scroll-size);
+}
+::-webkit-scrollbar-track  { background: var(--scroll-track); }
+::-webkit-scrollbar-thumb  { background: var(--scroll-thumb); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ── Inspector / left panel scrollable areas ─────────────────── */
+.inspector-scroll,
+.section-strip-scroll {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.inspector-scroll::-webkit-scrollbar-thumb,
+.section-strip-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  transition: background 0.2s;
+}
+.inspector-scroll:hover::-webkit-scrollbar-thumb,
+.section-strip-scroll:hover::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+}
+.inspector-scroll:hover::-webkit-scrollbar-thumb:hover,
+.section-strip-scroll:hover::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
+}
+
+/* ── Textarea overrides ──────────────────────────────────────── */
+textarea::-webkit-scrollbar { width: 3px; }
+textarea::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+}
+
+/* ── Radix Select portal ─────────────────────────────────────── */
+[data-radix-popper-content-wrapper] { z-index: 9999 !important; }
+
+/* ── Smooth scroll ───────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ── Panel Resize Handle ─────────────────────────────────────── */
+.resize-handle {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--resize-handle-width);
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s;
+  z-index: 20;
+  /* Expand the hit area without changing layout width */
+  margin: 0 -3px;
+  padding: 0 3px;
+}
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 8%;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  border-radius: 999px;
+  background: var(--resize-handle-color);
+  transition: background 0.15s, height 0.15s;
+}
+.resize-handle:hover::after {
+  background: var(--resize-handle-hover);
+}
+.resize-handle.is-dragging::after {
+  background: var(--resize-handle-active);
+  top: 0;
+  bottom: 0;
+}
+
+/* ── Property row hover reveal ───────────────────────────────── */
+.prop-row .prop-actions {
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.prop-row:hover .prop-actions {
+  opacity: 1;
+}
+
+/* ── Figma-style pill tab bar ────────────────────────────────── */
+.panel-tab-bar {
+  display: flex;
+  padding: 3px;
+  gap: 2px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  margin: 8px;
+}
+.panel-tab {
+  flex: 1;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255,255,255,0.38);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.panel-tab:hover {
+  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.05);
+}
+.panel-tab.active {
+  color: rgba(255,255,255,0.90);
+  background: rgba(255,255,255,0.10);
+}
+
+/* ── Figma-style section divider label ───────────────────────── */
+.fig-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+.fig-section-label::before,
+.fig-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── Figma-style layers row ──────────────────────────────────── */
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+  position: relative;
+}
+.layer-row:hover { background: rgba(255,255,255,0.05); }
+.layer-row.selected { background: rgba(255,255,255,0.10); }
+.layer-row .layer-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.layer-row:hover .layer-actions,
+.layer-row.selected .layer-actions {
+  opacity: 1;
+}
+
